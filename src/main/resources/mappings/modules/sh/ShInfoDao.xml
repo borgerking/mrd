@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sh.dao.ShInfoDao">
+    
+	<sql id="shInfoColumns">
+		a.id AS "id",
+		a.sh_mc AS "shMc",
+		a.sh_code AS "shCode",
+		a.sh_name AS "shName",
+		a.phone AS "phone",
+		a.js_mode AS "jsMode",
+		a.js_cp AS "jsCp",
+		a.dls_code AS "agent.id",
+		a.user_id AS "user.id",
+		a.kt_state AS "ktState",
+		a.sh_state AS "shState",
+		a.ksn_code AS "ksnCode",
+		a.xl_number AS "xlNumber",
+		a.js_code AS "jsCode",
+		a.zc_date AS "zcDate",
+		a.kt_date AS "ktDate",
+		u8.name AS "agent.name",
+		u9.name AS "user.name"
+	</sql>
+	
+	<sql id="shInfoJoins">
+		LEFT JOIN sys_office u8 ON u8.id = a.dls_code
+		LEFT JOIN sys_user u9 ON u9.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="ShInfo">
+		SELECT 
+			<include refid="shInfoColumns"/>
+		FROM sh_info a
+		<include refid="shInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ShInfo">
+		SELECT 
+			<include refid="shInfoColumns"/>
+		FROM sh_info a
+		<include refid="shInfoJoins"/>
+		<where>
+			
+			<if test="shMc != null and shMc != ''">
+				AND a.sh_mc LIKE 
+					<if test="dbName == 'oracle'">'%'||#{shMc}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{shMc}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{shMc},'%')</if>
+			</if>
+			<if test="shCode != null and shCode != ''">
+				AND a.sh_code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{shCode}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{shCode}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{shCode},'%')</if>
+			</if>
+			<if test="shName != null and shName != ''">
+				AND a.sh_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{shName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{shName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{shName},'%')</if>
+			</if>
+			<if test="phone != null and phone != ''">
+				AND a.phone = #{phone}
+			</if>
+			<if test="jsCp != null and jsCp != ''">
+				AND a.js_cp LIKE 
+					<if test="dbName == 'oracle'">'%'||#{jsCp}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{jsCp}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{jsCp},'%')</if>
+			</if>
+			<if test="agent != null and agent.id != null and agent.id != ''">
+				AND a.dls_code = #{agent.id}
+			</if>
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="ktState != null and ktState != ''">
+				AND a.kt_state = #{ktState}
+			</if>
+			<if test="shState != null and shState != ''">
+				AND a.sh_state = #{shState}
+			</if>
+			<if test="ksnCode != null and ksnCode != ''">
+				AND a.ksn_code = #{ksnCode}
+			</if>
+			<if test="xlNumber != null and xlNumber != ''">
+				AND a.xl_number = #{xlNumber}
+			</if>
+			<if test="beginZcDate != null and endZcDate != null and beginZcDate != '' and endZcDate != ''">
+				AND a.zc_date BETWEEN #{beginZcDate} AND #{endZcDate}
+			</if>
+			<if test="beginKtDate != null and endKtDate != null and beginKtDate != '' and endKtDate != ''">
+				AND a.kt_date BETWEEN #{beginKtDate} AND #{endKtDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ShInfo">
+		SELECT 
+			<include refid="shInfoColumns"/>
+		FROM sh_info a
+		<include refid="shInfoJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sh_info(
+			id,
+			sh_mc,
+			sh_code,
+			sh_name,
+			phone,
+			js_mode,
+			js_cp,
+			dls_code,
+			user_id,
+			kt_state,
+			sh_state,
+			ksn_code,
+			xl_number,
+			js_code,
+			zc_date,
+			kt_date
+		) VALUES (
+			#{id},
+			#{shMc},
+			#{shCode},
+			#{shName},
+			#{phone},
+			#{jsMode},
+			#{jsCp},
+			#{agent.id},
+			#{user.id},
+			#{ktState},
+			#{shState},
+			#{ksnCode},
+			#{xlNumber},
+			#{jsCode},
+			#{zcDate},
+			#{ktDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sh_info SET 	
+			sh_mc = #{shMc},
+			sh_code = #{shCode},
+			sh_name = #{shName},
+			phone = #{phone},
+			js_mode = #{jsMode},
+			js_cp = #{jsCp},
+			dls_code = #{agent.id},
+			user_id = #{user.id},
+			kt_state = #{ktState},
+			sh_state = #{shState},
+			ksn_code = #{ksnCode},
+			xl_number = #{xlNumber},
+			js_code = #{jsCode},
+			zc_date = #{zcDate},
+			kt_date = #{ktDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM sh_info
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

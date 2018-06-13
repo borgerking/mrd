@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.jy.dao.JyTransactionDao">
+    
+	<sql id="jyTransactionColumns">
+		a.transaction_id AS "transactionId",
+		a.merchant_id AS "merchantId",
+		a.transaction_user_id AS "transactionUserId",
+		a.sub_merchant_id AS "subMerchantId",
+		a.ksn_code AS "ksnCode",
+		a.serial_number AS "serialNumber",
+		a.settlement_model AS "settlementModel",
+		a.settlement_type AS "settlementType",
+		a.payment_mode AS "paymentMode",
+		a.debit_card_rate AS "debitCardRate",
+		a.loan_card_rate AS "loanCardRate",
+		a.other_card_rate AS "otherCardRate",
+		a.additional_cost AS "additionalCost",
+		a.transaction_number AS "transactionNumber",
+		a.transaction_amount AS "transactionAmount",
+		a.service_charge AS "serviceCharge",
+		a.terminal_number AS "terminalNumber",
+		a.consult_number AS "consultNumber",
+		a.transaction_type AS "transactionType",
+		a.card_number AS "cardNumber",
+		a.card_type AS "cardType",
+		a.settlement_status AS "settlementStatus",
+		a.transaction_date AS "transactionDate",
+		a.create_user_id AS "createUserId",
+		a.create_date AS "createDate",
+		a.create_company_id AS "createCompanyId",
+		u4.sh_code AS "shInfo.shCode",
+		u4.sh_mc AS "shInfo.shMc",
+		u5.merchant_name AS "subMerchant.merchantName"
+	</sql>
+	
+	<sql id="jyTransactionJoins">
+		LEFT JOIN sh_info u4 ON u4.id = a.merchant_id
+		LEFT JOIN sub_merchant u5 ON u5.id = a.sub_merchant_id
+	</sql>
+    
+	<select id="get" resultType="JyTransaction">
+		SELECT 
+			<include refid="jyTransactionColumns"/>
+		FROM jy_transaction a
+		<include refid="jyTransactionJoins"/>
+		WHERE a.transaction_id = #{transactionId}
+	</select>
+	
+	<select id="findList" resultType="JyTransaction">
+		SELECT 
+			<include refid="jyTransactionColumns"/>
+		FROM jy_transaction a
+		<include refid="jyTransactionJoins"/>
+		<where>
+			<if test="ksnCode != null and ksnCode != ''">
+				AND a.ksn_code = #{ksnCode}
+			</if>
+			<if test="jyBeginDate != null and jyBeginDate != ''">
+				AND a.transaction_date &gt;= #{jyBeginDate}
+			</if>
+			<if test="jyEndDate != null and jyEndDate != ''">
+				AND a.transaction_date &lt;= #{jyEndDate}
+			</if>
+			<if test="settlementModel != null and settlementModel != ''">
+				AND a.settlement_model = #{settlementModel}
+			</if>
+			<if test="terminalNumber != null and terminalNumber != ''">
+				AND a.terminal_number = #{terminalNumber}
+			</if>
+			<if test="settlementType != null and settlementType != ''">
+				AND a.settlement_type = #{settlementType}
+			</if>
+			<if test="terminalNumber != null and terminalNumber != ''">
+				AND a.terminal_number = #{terminalNumber}
+			</if>
+			<if test="consultNumber != null and consultNumber != ''">
+				AND a.consult_number = #{consultNumber}
+			</if>
+			<if test="cardNumber != null and cardNumber != ''">
+				AND a.card_number = #{cardNumber}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JyTransaction">
+		SELECT 
+			<include refid="jyTransactionColumns"/>
+		FROM jy_transaction a
+		<include refid="jyTransactionJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO jy_transaction(
+			transaction_id,
+			merchant_id,
+			transaction_user_id,
+			ksn_code,
+			serial_number,
+			settlement_model,
+			payment_mode,
+			debit_card_rate,
+			loan_card_rate,
+			other_card_rate,
+			additional_cost,
+			transaction_number,
+			transaction_amount,
+			service_charge,
+			terminal_number,
+			transaction_type,
+			card_number,
+			card_type,
+			transaction_date,
+			create_user_id,
+			create_date,
+			create_company_id
+		) VALUES (
+			#{transactionId},
+			#{merchantId},
+			#{transactionUserId},
+			#{ksnCode},
+			#{serialNumber},
+			#{settlementModel},
+			#{paymentMode},
+			#{debitCardRate},
+			#{loanCardRate},
+			#{otherCardRate},
+			#{additionalCost},
+			#{transactionNumber},
+			#{transactionAmount},
+			#{serviceCharge},
+			#{terminalNumber},
+			#{transactionType},
+			#{cardNumber},
+			#{cardType},
+			#{transactionDate},
+			#{createUserId},
+			NOW(),
+			#{createCompanyId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE jy_transaction SET 	
+			transaction_id = #{transactionId},
+			merchant_id = #{merchantId},
+			transaction_user_id = #{transactionUserId},
+			ksn_code = #{ksnCode},
+			settlement_model = #{settlementModel},
+			payment_mode = #{paymentMode},
+			debit_card_rate = #{debitCardRate},
+			loan_card_rate = #{loanCardRate},
+			other_card_rate = #{otherCardRate},
+			additional_cost = #{additionalCost},
+			transaction_number = #{transactionNumber},
+			transaction_amount = #{transactionAmount},
+			service_charge = #{serviceCharge},
+			transaction_date = #{transactionDate},
+			create_user_id = #{createUserId},
+			create_company_id = #{createCompanyId}
+		WHERE transaction_id = #{transactionId}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM jy_transaction
+		WHERE transaction_id = #{transactionId}
+	</update>
+	
+</mapper>

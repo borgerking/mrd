@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sub.dao.SubMerchantDao">
+    
+	<sql id="subMerchantColumns">
+		a.id AS "id",
+		a.merchant_no AS "merchantNo",
+		a.merchant_name AS "merchantName",
+		a.merchant_level AS "merchantLevel",
+		a.signer AS "user.id",
+		a.share_type AS "shareType",
+		a.share_version AS "shareVersion",
+		a.share_prod_version AS "shareProdVersion",
+		a.account_name AS "accountName",
+		a.custom_rate AS "customRate",
+		a.account_bank AS "accountBank",
+		a.account_card AS "accountCard",
+		a.account_standard AS "accountStandard",
+		a.account_type AS "accountType",
+		a.account_province AS "accountProvince",
+		a.account_city AS "accountCity",
+		a.account_area AS "accountArea",
+		a.account_street AS "accountStreet",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u5.name AS "user.name"
+	</sql>
+	
+	<sql id="subMerchantJoins">
+		LEFT JOIN sys_user u5 ON u5.id = a.signer
+	</sql>
+    
+	<select id="get" resultType="SubMerchant">
+		SELECT 
+			<include refid="subMerchantColumns"/>
+		FROM sub_merchant a
+		<include refid="subMerchantJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SubMerchant">
+		SELECT 
+			<include refid="subMerchantColumns"/>
+		FROM sub_merchant a
+		<include refid="subMerchantJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="merchantNo != null and merchantNo != ''">
+				AND a.merchant_no = #{merchantNo}
+			</if>
+			<if test="merchantName != null and merchantName != ''">
+				AND a.merchant_name = #{merchantName}
+			</if>
+			<if test="merchantLevel != null and merchantLevel != ''">
+				AND a.merchant_level = #{merchantLevel}
+			</if>
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.signer = #{user.id}
+			</if>
+			<if test="shareType != null and shareType != ''">
+				AND a.share_type = #{shareType}
+			</if>
+			<if test="shareVersion != null and shareVersion != ''">
+				AND a.share_version = #{shareVersion}
+			</if>
+			<if test="shareProdVersion != null and shareProdVersion != ''">
+				AND a.share_prod_version = #{shareProdVersion}
+			</if>
+			<if test="customRate != null and customRate != ''">
+				AND a.custom_rate = #{customRate}
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SubMerchant">
+		SELECT 
+			<include refid="subMerchantColumns"/>
+		FROM sub_merchant a
+		<include refid="subMerchantJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sub_merchant(
+			id,
+			merchant_no,
+			merchant_name,
+			merchant_level,
+			signer,
+			share_type,
+			share_version,
+			share_prod_version,
+			account_name,
+			custom_rate,
+			account_bank,
+			account_card,
+			account_standard,
+			account_type,
+			account_province,
+			account_city,
+			account_area,
+			account_street,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{merchantNo},
+			#{merchantName},
+			#{merchantLevel},
+			#{user.id},
+			#{shareType},
+			#{shareVersion},
+			#{shareProdVersion},
+			#{accountName},
+			#{customRate},
+			#{accountBank},
+			#{accountCard},
+			#{accountStandard},
+			#{accountType},
+			#{accountProvince},
+			#{accountCity},
+			#{accountArea},
+			#{accountStreet},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sub_merchant SET 	
+			merchant_no = #{merchantNo},
+			merchant_name = #{merchantName},
+			merchant_level = #{merchantLevel},
+			signer = #{user.id},
+			share_type = #{shareType},
+			share_version = #{shareVersion},
+			share_prod_version = #{shareProdVersion},
+			account_name = #{accountName},
+			custom_rate = #{customRate},
+			account_bank = #{accountBank},
+			account_card = #{accountCard},
+			account_standard = #{accountStandard},
+			account_type = #{accountType},
+			account_province = #{accountProvince},
+			account_city = #{accountCity},
+			account_area = #{accountArea},
+			account_street = #{accountStreet},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sub_merchant SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

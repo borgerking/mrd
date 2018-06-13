@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.mac.dao.MacKsnDao">
+    
+	<sql id="macKsnColumns">
+		a.ksn_id AS "ksnId",
+		a.ksn_code AS "ksnCode",
+		a.supplier_id AS "supplierId",
+		a.user_id AS "user.id",
+		a.office_id AS "officeId",
+		a.activation_status AS "activationStatus",
+		a.use_status AS "useStatus",
+		a.distribute_status AS "distributeStatus",
+		a.create_user_id AS "createUserId",
+		a.create_date AS "createDate",
+		a.update_user_id AS "updateUserId",
+		a.update_date AS "updateDate",
+		a.create_office_id AS "createOfficeId",
+		u4.name AS "user.name"
+	</sql>
+	
+	<sql id="macKsnJoins">
+		LEFT JOIN sys_user u4 ON u4.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="MacKsn">
+		SELECT 
+			<include refid="macKsnColumns"/>
+		FROM mac_ksn a
+		<include refid="macKsnJoins"/>
+		WHERE a.ksn_id = #{ksnId}
+	</select>
+	
+	<select id="findList" resultType="MacKsn">
+		SELECT 
+			<include refid="macKsnColumns"/>
+		FROM mac_ksn a
+		<include refid="macKsnJoins"/>
+		<where>
+			<if test="ksnCode != null and ksnCode != ''">
+				AND a.ksn_code = #{ksnCode}
+			</if>
+			<if test="activationStatus != null and activationStatus != ''">
+				AND a.activation_status = #{activationStatus}
+			</if>
+			<if test="useStatus != null and useStatus != ''">
+				AND a.use_status = #{useStatus}
+			</if>
+			<if test="distributeStatus != null and distributeStatus != ''">
+				AND a.distribute_status = #{distributeStatus}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MacKsn">
+		SELECT 
+			<include refid="macKsnColumns"/>
+		FROM mac_ksn a
+		<include refid="macKsnJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mac_ksn(
+			ksn_id,
+			ksn_code,
+			supplier_id,
+			user_id,
+			office_id,
+			activation_status,
+			use_status,
+			distribute_status,
+			create_user_id,
+			create_date,
+			create_office_id
+		) VALUES (
+			#{ksnId},
+			#{ksnCode},
+			#{supplierId},
+			#{user.id},
+			#{officeId},
+			#{activationStatus},
+			#{useStatus},
+			#{distributeStatus},
+			#{createUserId},
+			NOW(),
+			#{createOfficeId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mac_ksn SET 	
+			supplier_id = #{supplierId},
+			user_id = #{user.id},
+			office_id = #{officeId},
+			activation_status = #{activationStatus},
+			use_status = #{useStatus},
+			distribute_status = #{distributeStatus},
+			update_user_id = #{updateUserId},
+			update_date = NOW()
+		WHERE ksn_id = #{ksnId}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mac_ksn
+		WHERE ksn_id = #{ksnId}
+	</update>
+	
+</mapper>

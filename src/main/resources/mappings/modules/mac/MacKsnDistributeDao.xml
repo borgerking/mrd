@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.mac.dao.MacKsnDistributeDao">
+    
+	<sql id="macKsnDistributeColumns">
+		a.distribute_id AS "distributeId",
+		a.user_id AS "user.id",
+		a.supplier_id AS "supplierId",
+		a.batch_number AS "batchNumber",
+		a.serial_number AS "serialNumber",
+		a.total_count AS "totalCount",
+		a.success_count AS "successCount",
+		a.fail_count AS "failCount",
+		a.batch_status AS "batchStatus",
+		a.ksn_code AS "ksnCode",
+		a.value3 AS "value3",
+		a.value4 AS "value4",
+		a.remarks AS "remarks",
+		a.create_user_id AS "createUserId",
+		a.create_date AS "createDate",
+		a.update_user_id AS "updateUserId",
+		a.update_date AS "updateDate",
+		a.create_company_id AS "createCompanyId",
+		u2.name AS "user.name",
+		k2.distribute_status AS "macKsn.distributeStatus"
+	</sql>
+	
+	<sql id="macKsnDistributeJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+		LEFT JOIN mac_ksn k2 ON k2.ksn_code = a.ksn_code
+	</sql>
+    
+	<select id="get" resultType="MacKsnDistribute">
+		SELECT 
+			<include refid="macKsnDistributeColumns"/>
+		FROM mac_ksn_distribute a
+		<include refid="macKsnDistributeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MacKsnDistribute">
+		SELECT 
+			<include refid="macKsnDistributeColumns"/>
+		FROM mac_ksn_distribute a
+		<include refid="macKsnDistributeJoins"/>
+		<where>
+			<if test="batchNumber != null and batchNumber != ''">
+				AND a.batch_number = #{batchNumber}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND u2.name = #{supplierId}
+			</if>
+			<if test="beginDate != null">
+				AND a.create_date &gt;= #{beginDate}
+			</if>
+			<if test="endDate != null">
+				AND a.create_date &lt;= #{endDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MacKsnDistribute">
+		SELECT 
+			<include refid="macKsnDistributeColumns"/>
+		FROM mac_ksn_distribute a
+		<include refid="macKsnDistributeJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mac_ksn_distribute(
+			distribute_id,
+			user_id,
+			supplier_id,
+			batch_number,
+			total_count,
+			success_count,
+			fail_count,
+			batch_status,
+			ksn_code,
+			serial_number,
+			value3,
+			value4,
+			remarks,
+			create_user_id,
+			create_date,
+			update_user_id,
+			update_date,
+			create_company_id
+		) VALUES (
+			#{distributeId},
+			#{user.id},
+			#{supplierId},
+			#{batchNumber},
+			#{totalCount},
+			#{successCount},
+			#{failCount},
+			#{batchStatus},
+			#{ksnCode},
+			#{serialNumber},
+			#{value3},
+			#{value4},
+			#{remarks},
+			#{createUserId},
+			#{createDate},
+			#{updateUserId},
+			#{updateDate},
+			#{createCompanyId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mac_ksn_distribute SET 	
+			distribute_id = #{distributeId},
+			user_id = #{user.id},
+			supplier_id = #{supplierId},
+			batch_number = #{batchNumber},
+			total_count = #{totalCount},
+			success_count = #{successCount},
+			fail_count = #{failCount},
+			batch_status = #{batchStatus},
+			ksn_code = #{ksnCode},
+			serial_number = #{serialNumber},
+			value3 = #{value3},
+			value4 = #{value4},
+			remarks = #{remarks},
+			create_user_id = #{createUserId},
+			update_user_id = #{updateUserId},
+			update_date = #{updateDate},
+			create_company_id = #{createCompanyId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM mac_ksn_distribute
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
